@@ -1,0 +1,176 @@
+{
+    "title": "Classic and Simple Meat Lasagna",
+    "ingredients": [
+      {
+        "name": "whole wheat lasagna noodles",
+        "quantity": 12,
+        "measurement": "pieces",
+        "descriptor": null,
+        "preparation": null
+      },
+      {
+        "name": "lean ground beef",
+        "quantity": 1,
+        "measurement": "pound",
+        "descriptor": "lean",
+        "preparation": null
+      },
+      {
+        "name": "garlic",
+        "quantity": 2,
+        "measurement": "cloves",
+        "descriptor": null,
+        "preparation": "chopped"
+      },
+      {
+        "name": "dried oregano",
+        "quantity": 1,
+        "measurement": "teaspoon",
+        "descriptor": null,
+        "preparation": null
+      },
+      {
+        "name": "garlic powder",
+        "quantity": 0.5,
+        "measurement": "teaspoon",
+        "descriptor": null,
+        "preparation": null
+      },
+      {
+        "name": "salt",
+        "quantity": "to taste",
+        "measurement": null,
+        "descriptor": null,
+        "preparation": null
+      },
+      {
+        "name": "ground black pepper",
+        "quantity": "to taste",
+        "measurement": null,
+        "descriptor": null,
+        "preparation": null
+      },
+      {
+        "name": "cottage cheese",
+        "quantity": 1,
+        "measurement": "16 ounce package",
+        "descriptor": null,
+        "preparation": null
+      },
+      {
+        "name": "Parmesan cheese",
+        "quantity": 0.5,
+        "measurement": "cup",
+        "descriptor": null,
+        "preparation": "shredded"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "measurement": "pieces",
+        "descriptor": null,
+        "preparation": null
+      },
+      {
+        "name": "tomato-basil pasta sauce",
+        "quantity": 4.5,
+        "measurement": "cups",
+        "descriptor": null,
+        "preparation": null
+      },
+      {
+        "name": "mozzarella cheese",
+        "quantity": 2,
+        "measurement": "cups",
+        "descriptor": null,
+        "preparation": "shredded"
+      }
+    ],
+    "tools": [
+      "oven",
+      "pot",
+      "skillet",
+      "baking pan",
+      "mixing bowl",
+      "aluminum foil"
+    ],
+    "methods": [
+      "preheat",
+      "boil",
+      "cook",
+      "stir",
+      "mix",
+      "layer",
+      "bake",
+      "drain"
+    ],
+    "steps": [
+      {
+        "step_number": 1,
+        "text": "Preheat the oven to 350 degrees F (175 degrees C).",
+        "ingredients": [],
+        "tools": ["oven"],
+        "methods": ["preheat"],
+        "time": {
+          "duration": "N/A",
+          "unit": "N/A"
+        }
+      },
+      {
+        "step_number": 2,
+        "text": "Bring a large pot of lightly salted water to a boil. Add lasagna noodles and cook for 10 minutes or until al dente; drain.",
+        "ingredients": ["whole wheat lasagna noodles", "salt"],
+        "tools": ["pot"],
+        "methods": ["boil", "cook", "drain"],
+        "time": {
+          "duration": 10,
+          "unit": "minutes"
+        }
+      },
+      {
+        "step_number": 3,
+        "text": "Meanwhile, place ground beef, garlic, oregano, garlic powder, salt, and black pepper in a large skillet over medium heat; cook and stir until beef is crumbly and evenly browned, about 10 minutes.",
+        "ingredients": ["lean ground beef", "garlic", "dried oregano", "garlic powder", "salt", "ground black pepper"],
+        "tools": ["skillet"],
+        "methods": ["cook", "stir"],
+        "time": {
+          "duration": 10,
+          "unit": "minutes"
+        }
+      },
+      {
+        "step_number": 4,
+        "text": "Mix cottage cheese, Parmesan cheese, and eggs together in a large bowl until thoroughly combined.",
+        "ingredients": ["cottage cheese", "Parmesan cheese", "eggs"],
+        "tools": ["mixing bowl"],
+        "methods": ["mix"],
+        "time": {
+          "duration": "N/A",
+          "unit": "N/A"
+        }
+      },
+      {
+        "step_number": 5,
+        "text": "Lay 4 noodles side by side on the bottom of a 9x13-inch baking pan; top with a layer of prepared tomato-basil sauce, a layer of ground beef mixture, and a layer of cottage cheese mixture. Repeat layers twice more, ending with a layer of sauce; sprinkle mozzarella cheese on top. Cover the dish with aluminum foil.",
+        "ingredients": ["whole wheat lasagna noodles", "tomato-basil pasta sauce", "ground beef mixture", "cottage cheese mixture", "mozzarella cheese"],
+        "tools": ["baking pan", "aluminum foil"],
+        "methods": ["layer"],
+        "time": {
+          "duration": "N/A",
+          "unit": "N/A"
+        }
+      },
+      {
+        "step_number": 6,
+        "text": "Bake in the preheated oven until the lasagna is bubbling and the cheese has melted, about 30 minutes. Remove foil and bake until cheese has begun to brown, about 10 more minutes. Allow to stand at least 10 minutes before serving.",
+        "ingredients": ["mozzarella cheese"],
+        "tools": ["oven", "aluminum foil"],
+        "methods": ["bake"],
+        "time": {
+          "duration": 40,
+          "unit": "minutes"
+        }
+      }
+    ]
+  }
+  
