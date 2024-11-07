@@ -91,7 +91,7 @@ def parse_steps(json_data, ingredient_names):
         ingredients = list(set(filter(lambda ingredient: ingredient.lower() in text.lower(), ingredient_names)))
         for ingredient in ingredient_names:
             for word in text.lower().split():
-                # Use fuzzywuzzy to compare word similarity with the ingredient
+                # Use Levenshtein to compare word similarity with the ingredient
                 similarity = Levenshtein.ratio(word, ingredient.lower())
                 if similarity >= 0.6:
                     if ingredient not in ingredients:
