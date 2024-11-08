@@ -20,24 +20,43 @@ def is_navigation_request(response):
 def is_step_specific_question(response):
     return True
 
-def return_ingredients(recipe):
-    ingredients_list = [f"{i+1}. {ingredient['name']}" for i, ingredient in enumerate(recipe['ingredients'])]
-    return f"Here are the ingredients used in {recipe['title']}:\n" + "\n".join(ingredients_list)
-
 def return_steps(recipe):
     steps_str = f"Here are the steps to make {recipe['title']}: \n"
     for step in recipe['steps']:
         steps_str += f"{step['step_number']}. {step['text']}\n"
     return steps_str
 
-def return_tools(recipe):
-    tools_list = [f"{i+1}. {tool}" for i, tool in enumerate(recipe['tools'])]
-    return f"Here are the tools used in {recipe['title']}:\n" + "\n".join(tools_list)
+def return_ingredients(recipe, step=None):
+    match step:
+        case None:
+            ingredients_list = [f"{i+1}. {ingredient['name']}" for i, ingredient in enumerate(recipe['ingredients'])]
+            return f"Here are the ingredients used in {recipe['title']}:\n" + "\n".join(ingredients_list)
+        case _: # return ingredients for specific step
+            ingredients_list = [f"{i+1}. {ingredient}" for i, ingredient in enumerate(recipe['steps'][step-1]['ingredients'])]
+            return f"Here are the ingredients used in step {step} of {recipe['title']}:\n" + "\n".join(ingredients_list)
 
-def return_methods(recipe):
-    methods_list = [f"{i+1}. {method}" for i, method in enumerate(recipe['methods'])]
-    return f"Here are the methods used in {recipe['title']}:\n" + "\n".join(methods_list)
+def return_tools(recipe, step=None):
+    match step:
+        case None:
+            tools_list = [f"{i+1}. {tool}" for i, tool in enumerate(recipe['tools'])]
+            return f"Here are the tools used in {recipe['title']}:\n" + "\n".join(tools_list)
+        case _: # return tools for specific step
+            tools_list = [f"{i+1}. {tool}" for i, tool in enumerate(recipe['steps'][step-1]['tools'])]
+            return f"Here are the tools used in step {step} of {recipe['title']}:\n" + "\n".join(tools_list)
     
+def return_methods(recipe, step=None):
+    match step:
+        case None:
+            methods_list = [f"{i+1}. {method}" for i, method in enumerate(recipe['methods'])]
+            return f"Here are the methods used in {recipe['title']}:\n" + "\n".join(methods_list)
+        case _: # return methods for specific step 
+            methods_list = [f"{i+1}. {method}" for i, method in enumerate(recipe['steps'][step-1]['methods'])]
+            return f"Here are the methods used in step {step} of {recipe['title']}:\n" + "\n".join(methods_list)
+
+# To do: format this better
+def return_time(recipe, step):
+    step_time_info = recipe['steps'][step-1]['time']
+    return f"Carry out this step for {step_time_info['duration']} {step_time_info['unit']}{'s' if step_time_info['duration'] != 1 else ''}"
 '''
 Currently handles:
 - recipe retrieval & display
@@ -77,7 +96,6 @@ def handle_response(response, recipe):
         # TODO: Handle navigation statements 
         return response
 
-
 def update_step(current_step, user_query, recipe_object):
     '''
     Given the current step and a user query, return the appropriate step to navigate to.
@@ -113,23 +131,23 @@ def update_step(current_step, user_query, recipe_object):
         case 'Current':
             return current_step
         case 'Previous':
-            if current_step > 0:
+            if current_step == 0:
                 return "there is no previous step"
             return current_step - 1
         case 'Next':
-            if current_step < len(recipe_object['steps']): 
-                "there is no next step"
+            if current_step == len(recipe_object['steps']) - 1: 
+                return "there is no next step"
             return current_step + 1
         case 'Nth':
             # TO DO: better step_num extraction logic
             step_num = [int(s) for s in re.findall(r'\d+', user_query)][0] - 1
-            if step_num >= 0 and step_num < len(recipe_object['steps']):
-                "specified step is out of range, cannot navigate to invalid step"
+            if step_num < 0 or step_num >= len(recipe_object['steps']):
+                return "specified step is out of range, cannot navigate to invalid step"
             return step_num
 
 '''
 To do/consider:
-- create separate Conversation class consisting of:
+- separate Conversation class consisting of:
     - recipe object
     - question history
     - current step
@@ -148,34 +166,34 @@ def main():
         "Please proceed",
         "Go back",
         "Repeat please",
-        "Go to the 5th step",
-        "Go to the 25th step",
+        "Go to the 5th step"
+        # "Go to the 25th step",
     ]
 
     for question in question_sequence:
         current_step = update_step(current_step, question, recipe)
-        print(recipe["steps"][current_step]["text"] +'\n')
+        print(return_methods(recipe, current_step))
     
-    # Basic general question answering
-    question = "What is the recipe for lasagna?"
-    print(question)
+    # # Basic general question answering
+    # question = "What is the recipe for lasagna?"
+    # print(question)
+    # # print(handle_response(question, recipe))
+    # # Normally, the bot would find the recipe and parse, then move forward from here. 
+    # print("I found a recipe for lasagna. What do you want to know about it?")
+    # question = "What are the ingredients?"
+    # print(question)
     # print(handle_response(question, recipe))
-    # Normally, the bot would find the recipe and parse, then move forward from here. 
-    print("I found a recipe for lasagna. What do you want to know about it?")
-    question = "What are the ingredients?"
-    print(question)
-    print(handle_response(question, recipe))
-    question = "How do I make this?"
-    print(question)
-    print(handle_response(question, recipe))
-    question = "What methods will I use?"
-    print(question)
-    print(handle_response(question, recipe))
-    question = "How do I preheat the oven?"
-    print(question)
-    print(handle_response(question, recipe))
-    question = "What is aluminum foil?"
-    print(question)
-    print(handle_response(question, recipe))
+    # question = "How do I make this?"
+    # print(question)
+    # print(handle_response(question, recipe))
+    # question = "What methods will I use?"
+    # print(question)
+    # print(handle_response(question, recipe))
+    # question = "How do I preheat the oven?"
+    # print(question)
+    # print(handle_response(question, recipe))
+    # question = "What is aluminum foil?"
+    # print(question)
+    # print(handle_response(question, recipe))
 if __name__ == "__main__":
     main()
