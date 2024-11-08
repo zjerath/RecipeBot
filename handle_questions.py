@@ -113,15 +113,18 @@ def update_step(current_step, user_query, recipe_object):
         case 'Current':
             return current_step
         case 'Previous':
-            assert current_step > 0, "there is no previous step"
+            if current_step > 0:
+                return "there is no previous step"
             return current_step - 1
         case 'Next':
-            assert current_step < len(recipe_object['steps']), "there is no next step"
+            if current_step < len(recipe_object['steps']): 
+                "there is no next step"
             return current_step + 1
         case 'Nth':
             # TO DO: better step_num extraction logic
             step_num = [int(s) for s in re.findall(r'\d+', user_query)][0] - 1
-            assert step_num >= 0 and step_num < len(recipe_object['steps']), "specified step is out of range, cannot navigate to invalid step"
+            if step_num >= 0 and step_num < len(recipe_object['steps']):
+                "specified step is out of range, cannot navigate to invalid step"
             return step_num
 
 '''
@@ -145,7 +148,8 @@ def main():
         "Please proceed",
         "Go back",
         "Repeat please",
-        "Go to the 5th step"
+        "Go to the 5th step",
+        "Go to the 25th step",
     ]
 
     for question in question_sequence:
