@@ -90,6 +90,7 @@ def update_step(current_step, user_query, recipe_object):
                         Previous - navigate to previous step
                         Next - proceed to next step
                         Nth - navigate to any arbitrary step in the recipe
+        recipe_object: recipe we are navigating through
     '''
 
     # TO DO: better logic for classifying requests, probably regex
