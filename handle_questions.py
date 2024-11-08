@@ -118,13 +118,13 @@ def update_step(current_step, user_query, recipe_object):
             return current_step - 1
         case 'Next':
             if current_step < len(recipe_object['steps']): 
-                "there is no next step"
+                return "there is no next step"
             return current_step + 1
         case 'Nth':
             # TO DO: better step_num extraction logic
             step_num = [int(s) for s in re.findall(r'\d+', user_query)][0] - 1
             if step_num >= 0 and step_num < len(recipe_object['steps']):
-                "specified step is out of range, cannot navigate to invalid step"
+                return "specified step is out of range, cannot navigate to invalid step"
             return step_num
 
 '''
