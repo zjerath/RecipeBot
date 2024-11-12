@@ -29,7 +29,7 @@ class QuestionHandler:
         '''
         request_type_keywords = {
             "General": ["how to", "how do"],
-            "Navigation": ["go to", "proceed"],
+            "Navigation": ["go", "proceed", "take me", "move", "navigate"],
             "Step": ["for this step"]
         }
 
