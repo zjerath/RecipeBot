@@ -3,7 +3,7 @@ import json
 import requests
 import Levenshtein
 from bs4 import BeautifulSoup
-from Representation import Ingredient, Step, Recipe
+from representation import Ingredient, Step, Recipe
 
 def fetch_recipe(url):
     response = requests.get(url)
@@ -153,6 +153,7 @@ def recipe_to_json(recipe):
     }
     return recipe_dict
 
+'''
 # test
 link = "https://www.allrecipes.com/recipe/218091/classic-and-simple-meat-lasagna/"
 soup = fetch_recipe(link)
@@ -174,8 +175,9 @@ if recipe_data:
     for step in recipe.steps:
         print(f"Step {step.step_number}: {step.text} (Ingredients: {step.ingredients}, Tools: {step.tools}, Methods: {step.methods}, Time: {step.time})")
     recipe_json = recipe_to_json(recipe)
-    '''# write to example.json (already did)
-    with open('example.json', 'w', encoding='utf-8') as f:
-        json.dump(recipe_json, f, ensure_ascii=False, indent=2)'''
+    # write to example.json (already did)
+    #with open('example.json', 'w', encoding='utf-8') as f:
+        #json.dump(recipe_json, f, ensure_ascii=False, indent=2)
 else:
     print("No recipe data found in the JSON-LD.")
+'''
