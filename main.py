@@ -29,9 +29,15 @@ def main():
         "Go to the 25th step",
         "Take me to the 100th step",
         "Proceed to the 3rd step",
-        "Tell me the ingredients for this step",
-        "navigate to step 4",
-        "what are the methods for this step?"
+        "How do I do that?",
+        "Proceed to the 4th step", 
+        "How do I get that?",
+        "What can I replace that with?",
+        "What can I replace it with?",
+        "How much of this do I need?",
+        "What can I use instead of that?",
+        "How do I do this",
+        "What instead of that?",
     ]
 
     for question in question_sequence:
