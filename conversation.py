@@ -1,6 +1,7 @@
 import re
 from question_handler import QuestionHandler
 from constants import ordinal_base, ordinal_tens
+import spacy
 
 '''
 Conversation class consisting of:
@@ -18,6 +19,7 @@ class Conversation:
         self.current_step = 0
         self.question_history = []
         self.question_handler = QuestionHandler(recipe)
+        self.nlp = spacy.load("en_core_web_lg")
 
     # Function to convert any ordinal word to a number
     def ordinal_to_number(self, ordinal):
@@ -141,6 +143,44 @@ class Conversation:
     To do:
     - handle step navigation and step specific parameters simultaneously?
     '''
+    # Helper function to extract demonstrative references and their subjects
+    def extract_demonstrative_reference(self, text):
+        doc = self.nlp(text)
+        for token in doc:
+            # Check for demonstrative determiners/pronouns
+            if token.lemma_ in ["this", "that", "these", "those", "it"]:
+                # Look for the verb phrase that follows
+                precursor_words = ["do", "make", "cook", "prepare", "get", "of", "replace"]
+                if any(token.head.lemma_ == word for word in precursor_words):
+                    # Get the full verb phrase including the demonstrative
+                    verb_phrase = " ".join([token.head.text, token.text])
+                    return (token.head.lemma_, verb_phrase)
+                # Look for noun phrases
+                else: 
+                    return (token.head.lemma_, token.text)
+        return (None, None)
+    
+    def extract_subject_ingredient(self, request):
+        doc = self.nlp(request)
+        for token in doc:
+            if token.pos_ == "NOUN" and token.text.lower() in [ingredient['name'].lower() for ingredient in self.recipe['ingredients']]:
+                return token.text
+        return None
+    
+    def extract_subject_method(self, request):
+        doc = self.nlp(request)
+        for token in doc:
+            if token.pos_ == "VERB" and token.text.lower() in [method.lower() for method in self.recipe['methods']]:
+                return token.text
+        return None
+    
+    def extract_subject_tool(self, request):
+        doc = self.nlp(request)
+        for token in doc:
+            if token.pos_ == "NOUN" and token.text.lower() in [tool.lower() for tool in self.recipe['tools']]:
+                return token.text
+        return None
+    
     def handle_request(self, request):
         # Define keywords for identifying question type
         ingredient_words = ['ingredients']
@@ -172,7 +212,46 @@ class Conversation:
                         print("I don't know that information about this recipe. Please try asking again.")
                 # If the question is not about the recipe, search Google
                 else:
-                    print(self.question_handler.build_google_search_query(request))
+                    # Deal with vague queries (How to cook that, How to make that, etc.)
+                    dem_word, dem_subject = self.extract_demonstrative_reference(request)
+                    print(f"dem_word: {dem_word} | dem_subject: {dem_subject}")
+                    
+                    if dem_subject:
+                        # Get the current step's text
+                        current_step_text = self.recipe['steps'][self.current_step]['text']
+                        # Replace the demonstrative reference with the subject from current step
+                        if dem_word == "do":
+                            print(current_step_text)
+                            return
+                        elif dem_word == "cook" or dem_word == "prepare" or dem_word == "get" or dem_word == "make" or dem_word == "of" or dem_word == "replace":
+                            replacement = self.extract_subject_ingredient(current_step_text)
+                            if replacement:
+                                request = request.replace(dem_subject, dem_word + " " + replacement)
+                        elif dem_word == "use":
+                            replacement = self.extract_subject_tool(current_step_text)
+                            if replacement:
+                                request = request.replace(dem_subject, dem_word + " " + replacement)
+                        else:
+                            # Cannot determine what the user is asking for
+                            print(f"I don't know what you're referring to by \"{dem_word}\". Please try asking again.")
+                            return
+                    if "how much" in request.lower():
+                        subject = self.extract_subject_ingredient(request)
+                        print(f"subject: {subject}")
+                        found = False
+                        for ingredient in self.recipe['ingredients']:
+                            if ingredient['name'] == subject:
+                                if ingredient['measurement']:
+                                    print(f"You need {ingredient['quantity']} {ingredient['measurement']} of {ingredient['name']}")
+                                else:
+                                    print(f"You need {ingredient['quantity']} {ingredient['name']}")
+                                found = True
+                        if not found:
+                            print("I don't know that ingredient. Please try asking again.")
+                    else:
+                        # Actually deal with the query now
+                        print(self.question_handler.build_google_search_query(request))
+
             case "Navigation":
                 self.update_step(request)
             case "Step":
