@@ -77,14 +77,14 @@ class Conversation:
             user_input = "Can we go to the next step?"
             print(detect_navigation(user_input))  # Output: "Next Step"
         '''
-        if re.search(r".*\b(next|proceed|move|advance)\b.*\b(step|instruction)\b", user_query, re.IGNORECASE):
-            return "Next"
-        elif re.search(r".*\b(previous|go back|return|back to|last|prior)\b.*\b(step|instruction)\b", user_query, re.IGNORECASE):
-            return "Previous"
-        elif re.search(r".*\b(repeat|redo|again|once more|do over)\b.*\b(step|instruction|this)\b", user_query, re.IGNORECASE):
-            return "Current"
-        elif re.search(r"\b(?:go to|navigate to|move to|proceed to|take me to)\b.*\b(\d+)(?:st|nd|rd|th)?\b.*\b(?:step|instruction)\b.*", user_query, re.IGNORECASE) or re.search(r"\b(?:go to|navigate to|move to|proceed to|take me to)\b \b(?:step|instruction)\b \b(\d+)\b.*", user_query, re.IGNORECASE):
+        if re.search(r"\b(?:go to|navigate to|move to|proceed to|take me to)\b.*\b(\d+)(?:st|nd|rd|th)?\b.*\b(?:step|instruction)?\b.*", user_query, re.IGNORECASE) or re.search(r"\b(?:go to|navigate to|move to|proceed to|take me to)\b \b(?:step|instruction)\b \b(\d+)\b.*", user_query, re.IGNORECASE):
             return "Nth"
+        elif re.search(r".*\b(next|proceed|move|advance)\b.*", user_query, re.IGNORECASE):
+            return "Next"
+        elif re.search(r".*\b(previous|go back|return|back to|last|prior)\b.*", user_query, re.IGNORECASE):
+            return "Previous"
+        elif re.search(r".*\b(repeat|redo|again|once more|do over)\b.*", user_query, re.IGNORECASE):
+            return "Current"
         else:
             return "Unknown"
 
@@ -101,21 +101,6 @@ class Conversation:
                             Next - proceed to next step
                             Nth - navigate to any arbitrary step in the recipe
         '''
-
-        # # TO DO: better logic for classifying requests, probably regex
-        # navigation_keywords = {
-        #     'Current': ['repeat'],
-        #     'Previous': ['back', 'previous'],
-        #     'Next': ['next', 'proceed'],
-        #     'Nth': ['th step', 'st step']
-        # }
-        
-        # # categorize user_query
-        # navigation_type = None
-        # for type in navigation_keywords:
-        #     if any(i.lower() in user_query.lower() for i in navigation_keywords[type]):
-        #         navigation_type = type
-        #         break
         
         navigation_type = self.detect_navigation_type(user_query)
         

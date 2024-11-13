@@ -1,5 +1,6 @@
 from constants import ordinal_base, ordinal_tens
 import re
+from conversation import Conversation
 
 def ordinal_to_number(ordinal):
     # Check for base ordinals (e.g., "third" or "sixteenth")
@@ -84,25 +85,33 @@ def main():
     # Test cases
     requests = [
         "Go to the 25th step",
-        "Take me to the 100th step",
+        "Next step",
         "Proceed to the 3rd step",
-        "navigate to step 4"
+        "go back",
+        "repeat please",
+        "proceed"
     ]
 
-    navigation_patterns = [
-        r"\b(?:go to|navigate to|move to|proceed to|take me to)\b.*\b(\d+)(?:st|nd|rd|th)?\b.*\b(?:step|instruction)\b.*"
-        # r"\b(?:go to|navigate to|move to|proceed to|take me to)\b \b(?:step|instruction)\b \b(\d+)\b.*", #[a-zA-Z]+
-    ]
+    convo = Conversation(None)
 
-    # Extract step numbers
     for request in requests:
-        # print(f"Request: '{request}' -> Step: {extract_step_number(request)}")
-        for pattern in navigation_patterns:
-            match = re.search(pattern, request, re.IGNORECASE)
-            # print(match)
-        if match:
-            # print(match.groups)
-            print(match.group(1))
+        print(request)
+        print(f"Navigation type: {convo.detect_navigation_type(request)}\n")
+
+    # navigation_patterns = [
+    #     r"\b(?:go to|navigate to|move to|proceed to|take me to)\b.*\b(\d+)(?:st|nd|rd|th)?\b.*\b(?:step|instruction)\b.*"
+    #     # r"\b(?:go to|navigate to|move to|proceed to|take me to)\b \b(?:step|instruction)\b \b(\d+)\b.*", #[a-zA-Z]+
+    # ]
+
+    # # Extract step numbers
+    # for request in requests:
+    #     # print(f"Request: '{request}' -> Step: {extract_step_number(request)}")
+    #     for pattern in navigation_patterns:
+    #         match = re.search(pattern, request, re.IGNORECASE)
+    #         # print(match)
+    #     if match:
+    #         # print(match.groups)
+    #         print(match.group(1))
 
 
 if __name__ == "__main__":
