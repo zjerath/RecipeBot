@@ -9,7 +9,7 @@ def is_valid_allrecipes_url(url):
 
 def main():
     
-    recipe = json.load(open('example.json'))
+    # recipe = json.load(open('example.json'))
     # # print(recipe)
     # conversation = Conversation(recipe)
 
@@ -34,10 +34,10 @@ def main():
     #     "what are the methods for this step?"
     # ]
 
-    # for question in question_sequence:
-    #     print(f"QUESTION: {question}")
-    #     conversation.handle_request(question)
-    #     print('\n')
+    #for question in question_sequence:
+    #    print(f"QUESTION: {question}")
+    #    conversation.handle_request(question)
+    #    print('\n')'''
 
     # prompt for user input
     print("Please specify a URL.")
@@ -58,8 +58,17 @@ def main():
         # if json easier to work with, add line below and refer to jsn in convo
         jsn = recipe_to_json(recipe)
         conversation = Conversation(jsn) # Conversation() assumes recipe object in JSON format ATM
-
         print(f"Bot: Alright. So let's start working with \"{recipe.title}\". What do you want to do?")
+        print("\n[1] Go over ingredients list")
+        print("[2] Go over recipe steps.")
+        # simulate user choice
+        choice = input().strip()
+        if choice == '1':
+            conversation.handle_request("What are the ingredients?")
+        elif choice == '2':
+            conversation.handle_request("Go over recipe steps")
+        else:
+            print("Invalid choice. Please enter 1 or 2.")
         # simulate user choice
         while True:
             request = input().strip()
