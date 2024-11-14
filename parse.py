@@ -1,9 +1,12 @@
 import re
 import json
+import spacy
 import requests
 import Levenshtein
 from bs4 import BeautifulSoup
 from representation import Ingredient, Step, Recipe
+
+nlp = spacy.load('en_core_web_sm')
 
 def fetch_recipe(url):
     response = requests.get(url)
@@ -80,35 +83,46 @@ def parse_ingredients(json_data):
 def parse_steps(json_data, ingredient_names):
     steps = []
     instructions = json_data.get("recipeInstructions", [])
-    for idx, step in enumerate(instructions):
+    step_counter = 1
+    for step in instructions:
         text = step.get("text", "").strip()
-        # regex for tools and methods
-        tools_pattern = r"\b(oven|pot|skillet|baking pan|bowl|plate|aluminum foil|foil|tray|sheet|whisk|spatula|strainer|ladle|colander|saucepan)\b"
-        tools = list(set(re.findall(tools_pattern, text.lower())))
-        methods_pattern = r"\b(preheat|boil|cook|stir|mix|layer|bake|drain|broil|poach|roast|grill|steam)\b"
-        methods = list(set(re.findall(methods_pattern, text.lower())))
-        # handle ingredients
-        ingredients = list(set(filter(lambda ingredient: ingredient.lower() in text.lower(), ingredient_names)))
-        for ingredient in ingredient_names:
-            for word in text.lower().split():
-                # use Levenshtein to compare word similarity with the ingredient
-                similarity = Levenshtein.ratio(word, ingredient.lower())
-                if similarity >= 0.6:
-                    if ingredient not in ingredients:
+        # split sentences using regex and spacy
+        doc = nlp(text)
+        sentences = []
+        for sent in doc.sents:
+            sub_sentences = re.split(r'[;]', sent.text)
+            sub_sentences = [sub_sentence.strip() for sub_sentence in sub_sentences if sub_sentence.strip()]
+            sentences.extend(sub_sentences)
+        for sub_text in sentences:
+            if not sub_text:
+                continue
+            # regex for tools and methods
+            tools_pattern = r"\b(oven|pot|skillet|baking pan|bowl|plate|aluminum foil|foil|tray|sheet|whisk|spatula|strainer|ladle|colander|saucepan)\b"
+            tools = list(set(re.findall(tools_pattern, sub_text.lower())))
+            methods_pattern = r"\b(preheat|boil|cook|stir|mix|layer|bake|drain|broil|poach|roast|grill|steam)\b"
+            methods = list(set(re.findall(methods_pattern, sub_text.lower())))
+            # handle ingredients
+            ingredients = list(set(filter(lambda ingredient: ingredient.lower() in sub_text.lower(), ingredient_names)))
+            for ingredient in ingredient_names:
+                for word in sub_text.lower().split():
+                    # use Levenshtein to compare word similarity with the ingredient
+                    similarity = Levenshtein.ratio(word, ingredient.lower())
+                    if similarity >= 0.6 and ingredient not in ingredients:
                         ingredients.append(ingredient)
                         break
-        # handle time
-        time_pattern = r"(\d+/\d+|\d+\.\d+|\d+)\s*(second|second[s]|minute|minute[s]?|hour|hour[s]?)"
-        time_match = re.search(time_pattern, text.lower())
-        if time_match:
-            duration_str = time_match.group(1)
-            duration = float(duration_str)
-            unit = time_match.group(2)
-            time = {"duration": duration, "unit": unit}
-        else:
-            time = None
-        step_obj = Step(step_number=idx + 1, text=text, ingredients=ingredients, tools=tools, methods=methods, time=time)
-        steps.append(step_obj)
+            # handle time
+            time_pattern = r"(\d+/\d+|\d+\.\d+|\d+)\s*(second|second[s]|minute|minute[s]?|hour|hour[s]?)"
+            time_match = re.search(time_pattern, sub_text.lower())
+            if time_match:
+                duration_str = time_match.group(1)
+                duration = float(duration_str)
+                unit = time_match.group(2)
+                time = {"duration": duration, "unit": unit}
+            else:
+                time = None
+            step_obj = Step(step_number=step_counter, text=sub_text, ingredients=ingredients, tools=tools, methods=methods, time=time)
+            steps.append(step_obj)
+            step_counter += 1
     return steps
 
 def parse_recipe(json_data):
@@ -153,6 +167,7 @@ def recipe_to_json(recipe):
     }
     return recipe_dict
 
+
 '''
 # test
 link = "https://www.allrecipes.com/recipe/218091/classic-and-simple-meat-lasagna/"
@@ -176,8 +191,8 @@ if recipe_data:
         print(f"Step {step.step_number}: {step.text} (Ingredients: {step.ingredients}, Tools: {step.tools}, Methods: {step.methods}, Time: {step.time})")
     recipe_json = recipe_to_json(recipe)
     # write to example.json (already did)
-    #with open('example.json', 'w', encoding='utf-8') as f:
-        #json.dump(recipe_json, f, ensure_ascii=False, indent=2)
+    # with open('example.json', 'w', encoding='utf-8') as f:
+        # json.dump(recipe_json, f, ensure_ascii=False, indent=2)
 else:
     print("No recipe data found in the JSON-LD.")
 '''
