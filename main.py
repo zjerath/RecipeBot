@@ -75,7 +75,8 @@ def main():
             print('\n')
             if request.lower() == "stop":
                 break
-            conversation.handle_request(request)
+            response = conversation.handle_request(request)
+            print(response)
 
     except Exception as e:
         print(f"An error occurred: {e}")

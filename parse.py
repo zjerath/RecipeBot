@@ -6,7 +6,7 @@ import Levenshtein
 from bs4 import BeautifulSoup
 from representation import Ingredient, Step, Recipe
 
-nlp = spacy.load('en_core_web_sm')
+nlp = spacy.load('en_core_web_lg')
 
 def fetch_recipe(url):
     response = requests.get(url)

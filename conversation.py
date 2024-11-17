@@ -113,26 +113,26 @@ class Conversation:
             case 'Previous':
                 if self.current_step > 0:
                     self.current_step -= 1
-                    print(f"Navigated to step {self.current_step + 1} successfully.")
+                    return(f"Navigated to step {self.current_step + 1} successfully.")
                 else:
-                    print(f"Unable to navigate to previous step as we're already at the first step.")
+                    return(f"Unable to navigate to previous step as we're already at the first step.")
             case 'Next':
                 if self.current_step < len(self.recipe['steps']) - 1: 
                     self.current_step += 1
-                    print(f"Navigated to step {self.current_step + 1} successfully.")
+                    return(f"Navigated to step {self.current_step + 1} successfully.")
                 else:
-                    print(f"Unable to navigate to next step as we're already at the last step.")
+                    return(f"Unable to navigate to next step as we're already at the last step.")
             case 'Nth':
                 # TO DO: better step_num extraction logic
                 # step_num = [int(s) for s in re.findall(r'\d+', user_query)][0]
                 step_num = self.extract_step_number(user_query)
                 if step_num > 0 and step_num <= len(self.recipe['steps']):
                     self.current_step = step_num - 1 # self.current_step is 0 indexed
-                    print(f"Navigated to step {step_num} successfully.")
+                    return(f"Navigated to step {step_num} successfully.")
                 else:
-                    print(f"Unable to navigate to step {step_num} as it is not within the range of 1 to {len(self.recipe['steps'])}.")
+                    return(f"Unable to navigate to step {step_num} as it is not within the range of 1 to {len(self.recipe['steps'])}.")
             case _:
-                print("Unknown navigation request type.")
+                return("Unknown navigation request type.")
     
     '''
     Basic request handling for:
@@ -201,15 +201,15 @@ class Conversation:
             case "General":
                 if any(word in request for word in all_words):
                     if any(word in request for word in ingredient_words):
-                        print(self.question_handler.return_ingredients())
+                        return(self.question_handler.return_ingredients())
                     elif any(word in request for word in step_words):
-                        print(self.question_handler.return_steps())
+                        return(self.question_handler.return_steps())
                     elif any(word in request for word in tools_words):
-                        print(self.question_handler.return_tools())
+                        return(self.question_handler.return_tools())
                     elif any(word in request for word in method_words):
-                        print(self.question_handler.return_methods())
+                        return(self.question_handler.return_methods())
                     else:
-                        print("I don't know that information about this recipe. Please try asking again.")
+                        return("I don't know that information about this recipe. Please try asking again.")
                 # If the question is not about the recipe, search Google
                 else:
                     # Deal with vague queries (How to cook that, How to make that, etc.)
@@ -221,8 +221,7 @@ class Conversation:
                         current_step_text = self.recipe['steps'][self.current_step]['text']
                         # Replace the demonstrative reference with the subject from current step
                         if dem_word == "do":
-                            print(current_step_text)
-                            return
+                            return(current_step_text)
                         elif dem_word == "cook" or dem_word == "prepare" or dem_word == "get" or dem_word == "make" or dem_word == "of" or dem_word == "replace":
                             replacement = self.extract_subject_ingredient(current_step_text)
                             if replacement:
@@ -233,8 +232,7 @@ class Conversation:
                                 request = request.replace(dem_subject, dem_word + " " + replacement)
                         else:
                             # Cannot determine what the user is asking for
-                            print(f"I don't know what you're referring to by \"{dem_word}\". Please try asking again.")
-                            return
+                            return(f"I don't know what you're referring to by \"{dem_word}\". Please try asking again.")
                     if "how much" in request.lower():
                         subject = self.extract_subject_ingredient(request)
                         print(f"subject: {subject}")
@@ -242,26 +240,28 @@ class Conversation:
                         for ingredient in self.recipe['ingredients']:
                             if ingredient['name'] == subject:
                                 if ingredient['measurement']:
-                                    print(f"You need {ingredient['quantity']} {ingredient['measurement']} of {ingredient['name']}")
+                                    return(f"You need {ingredient['quantity']} {ingredient['measurement']} of {ingredient['name']}")
                                 else:
-                                    print(f"You need {ingredient['quantity']} {ingredient['name']}")
+                                    return(f"You need {ingredient['quantity']} {ingredient['name']}")
                                 found = True
                         if not found:
-                            print("I don't know that ingredient. Please try asking again.")
+                            return("I don't know that ingredient. Please try asking again.")
                     else:
                         # Actually deal with the query now
-                        print(self.question_handler.build_google_search_query(request))
+                        return(self.question_handler.build_google_search_query(request))
 
             case "Navigation":
                 self.update_step(request)
+                return(f"Step {self.current_step + 1}: {self.recipe['steps'][self.current_step]['text']}")
+            
             case "Step":
                 if any(word in request for word in method_words):
-                    print(self.question_handler.return_methods(self.current_step))
+                    return(self.question_handler.return_methods(self.current_step))
                 elif any(word in request for word in ingredient_words):
-                    print(self.question_handler.return_ingredients(self.current_step))
+                    return(self.question_handler.return_ingredients(self.current_step))
                 elif any(word in request for word in time_words):
-                    print(self.question_handler.return_steps(self.current_step))
+                    return(self.question_handler.return_steps(self.current_step))
                 elif any(word in request for word in tools_words):
-                    print(self.question_handler.return_tools(self.current_step))
+                    return(self.question_handler.return_tools(self.current_step))
                 else:
-                    print("I don't know that information for the current step of this recipe. Please try asking again.")
+                    return("I don't know that information for the current step of this recipe. Please try asking again.")
