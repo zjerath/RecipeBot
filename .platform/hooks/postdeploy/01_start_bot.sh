@@ -1,9 +1,9 @@
 #!/bin/bash
 source /var/app/venv/*/bin/activate
+cd /var/app/current
 
-# Kill any existing bot processes
-pkill -f "python bot.py" || true
+# Kill any existing processes
+pkill -f "python app.py" || true
 
 # Start the bot
-cd /var/app/current
-nohup python bot.py > /var/log/bot.log 2>&1 &
+nohup python app.py &

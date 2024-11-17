@@ -4,7 +4,17 @@ Project 2 CS 337
 # Discord server invite link to interact with the bot: 
 https://discord.gg/HmNm343g7S
 
-# How to use the bot: 
-1. Mention the bot to start a conversation (e.g. "@RecipeBot Help me make this: https://www.allrecipes.com/recipe/156037/classic-lasagna/")
-2. Talk to the bot like you would to another person (e.g. "What are the ingredients needed?")
-3. Type "stop" to end the conversation
+# Getting started
+1. Clone the repository
+2. Create a virtual environment (python 3.10/3.11)
+3. Install the dependencies with pip install -r requirements.txt
+4. Run the chatbot in cli with python main.py
+
+# How to use the Discord bot: 
+1. Create a .env file in the root directory and add the following:
+    - BOT_TOKEN=MTMwNzc4Mjc4OTgyMjY4MTE1OQ  .Gw47Xk.6xRQ0hMusWuBuLPPryQPeF82zcDn35k4ebZOH0 (remove the spaces, can't upload explicit bot token to github)
+2. Start the bot locally by running python app.py
+3. Mention the bot to start a conversation (e.g. "@RecipeBot Help me make this: https://www.allrecipes.com/recipe/156037/classic-lasagna/")
+4. Talk to the bot like you would to another person (e.g. "What are the ingredients needed?")
+5. Type "stop" to end the conversation
+
