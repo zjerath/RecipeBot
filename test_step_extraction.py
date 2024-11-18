@@ -1,6 +1,10 @@
 from constants import ordinal_base, ordinal_tens
 import re
 from conversation import Conversation
+from question_handler import QuestionHandler
+import json
+from parse import fetch_recipe, extract_json_ld, parse_recipe, recipe_to_json
+
 
 def ordinal_to_number(ordinal):
     # Check for base ordinals (e.g., "third" or "sixteenth")
@@ -84,19 +88,33 @@ def extract_step_number(request):
 def main():
     # Test cases
     requests = [
+        "go to the first step",
+        "go to the last step",
         "Go to the 25th step",
+        "go to 4th step",
         "Next step",
         "Proceed to the 3rd step",
-        "go back",
-        "repeat please",
         "proceed"
     ]
 
-    convo = Conversation(None)
+    url = 'https://www.allrecipes.com/recipe/218091/classic-and-simple-meat-lasagna/'
+    soup = fetch_recipe(url)
+    json_data = extract_json_ld(soup)
+    if not json_data:
+        print("Could not find a valid recipe in the provided URL.")
+        return
+    # parse recipe
+    recipe = parse_recipe(json_data)
+    # if json easier to work with, add line below and refer to jsn in convo
+    jsn = recipe_to_json(recipe)
+
+    # convo = Conversation(None)
+    handler = QuestionHandler(jsn)
 
     for request in requests:
-        print(request)
-        print(f"Navigation type: {convo.detect_navigation_type(request)}\n")
+        print(f"request: {request} | step number: {handler.extract_step_number(request)} \n")
+        # print(f"Navigation type: {convo.detect_navigation_type(request)}\n")
+        # print()
 
     # navigation_patterns = [
     #     r"\b(?:go to|navigate to|move to|proceed to|take me to)\b.*\b(\d+)(?:st|nd|rd|th)?\b.*\b(?:step|instruction)\b.*"

@@ -37,59 +37,6 @@ class Conversation:
                 return ordinal_tens[parts[0]] + ordinal_base[parts[1]]
         # Return None if no match is found
         return None
-
-    # Function to extract step number
-    def extract_step_number(self, request):
-        '''
-        TO DO:
-            implement extraction of ordinal numbers & conversion to corresponding numeric values
-        Example usage:
-            print(extract_step_number("Go to step 42"))  # Output: 42
-            print(extract_step_number("navigate to the 5th step"))  # Output: 5
-        '''
-        # Regular expressions to capture the nth step
-        navigation_patterns = [
-            r"\b(?:go to|navigate to|move to|proceed to|take me to)\b.*\b(\d+)(?:st|nd|rd|th)?\b.*\b(?:step|instruction)\b.*",
-            r"\b(?:go to|navigate to|move to|proceed to|take me to)\b \b(?:step|instruction)\b \b(\d+)\b.*", #[a-zA-Z]+
-        ]
-
-        for pattern in navigation_patterns:
-            match = re.search(pattern, request, re.IGNORECASE)
-            if match:
-                step = match.group(1)  # Capture the step part
-                print(f"Request: {request} | Step: {int(step)}")
-                return int(step)
-                # # Check if it's a digit and return as an integer
-                # if step.isdigit():
-                #     return int(step)
-                # # Otherwise, attempt to convert ordinal to a number
-                # return self.ordinal_to_number(step.lower())
-        return None  # Return None if no step is found
-
-    
-    def detect_navigation_type(self, user_query):
-        '''
-        Given a user (navigation) request, determine whether they are asking to proceed to:
-        - the next step
-        - previous step
-        - current step (repeat)
-        - Nth step
-
-        Example usage:
-            user_input = "Can we go to the next step?"
-            print(detect_navigation(user_input))  # Output: "Next Step"
-        '''
-        if re.search(r"\b(?:go to|navigate to|move to|proceed to|take me to)\b.*\b(\d+)(?:st|nd|rd|th)?\b.*\b(?:step|instruction)?\b.*", user_query, re.IGNORECASE) or re.search(r"\b(?:go to|navigate to|move to|proceed to|take me to)\b \b(?:step|instruction)\b \b(\d+)\b.*", user_query, re.IGNORECASE):
-            return "Nth"
-        elif re.search(r".*\b(next|proceed|move|advance)\b.*", user_query, re.IGNORECASE):
-            return "Next"
-        elif re.search(r".*\b(previous|go back|return|back to|last|prior)\b.*", user_query, re.IGNORECASE):
-            return "Previous"
-        elif re.search(r".*\b(repeat|redo|again|once more|do over)\b.*", user_query, re.IGNORECASE):
-            return "Current"
-        else:
-            return "Unknown"
-
     
     def update_step(self, user_query):
         '''
@@ -104,7 +51,7 @@ class Conversation:
                             Nth - navigate to any arbitrary step in the recipe
         '''
         
-        navigation_type = self.detect_navigation_type(user_query)
+        navigation_type = self.question_handler.detect_navigation_type(user_query)
         
         # return appropriate index corresponding to user_query category
         match navigation_type:
@@ -123,14 +70,13 @@ class Conversation:
                 else:
                     return(f"Unable to navigate to next step as we're already at the last step.")
             case 'Nth':
-                # TO DO: better step_num extraction logic
-                # step_num = [int(s) for s in re.findall(r'\d+', user_query)][0]
-                step_num = self.extract_step_number(user_query)
+                step_num = self.question_handler.extract_step_number(user_query)
+                print(f"request: {user_query} | step_num: {step_num}")
                 if step_num > 0 and step_num <= len(self.recipe['steps']):
                     self.current_step = step_num - 1 # self.current_step is 0 indexed
                     return(f"Navigated to step {step_num} successfully.")
                 else:
-                    return(f"Unable to navigate to step {step_num} as it is not within the range of 1 to {len(self.recipe['steps'])}.")
+                    return(f"Invalid step number: this recipe has {len(self.recipe['steps'])} steps.")
             case _:
                 return("Unknown navigation request type.")
     
@@ -261,6 +207,11 @@ class Conversation:
                 elif any(word in request for word in ingredient_words):
                     return(self.question_handler.return_ingredients(self.current_step))
                 elif any(word in request for word in time_words):
+                    '''
+                    TO DO; check if user specified specific method in their time request
+                    extract time info for that specific method
+                        find method in method list, extract index, return time info at corresponding index
+                    '''
                     return(self.question_handler.return_time(self.current_step))
                 elif any(word in request for word in tools_words):
                     return(self.question_handler.return_tools(self.current_step))
