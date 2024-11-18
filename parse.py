@@ -58,19 +58,19 @@ def parse_ingredients(json_data):
                 measurement = match_parenthesis.group(2).strip()
             # regex to extract name, quantity (fractional or decimal), and measurement
             else:
-                pattern = r"(\d+/\d+|\d+\.\d+|\d+)?\s*(\b(?:cup|cups|teaspoon|teaspoons|tbsp|tablespoon|tablespoons|oz|ounce|ounces|pound|pounds|g|grams|kg|kilograms|ml|milliliters|l|liters|pinch|pinches|dash|dashes|slice|slices|clove|cloves|package|packages|piece|pieces)\b)?\s*(.*)"
+                pattern = r"(\d+/\d+|\d+\.\d+|\d+)?\s*(\b(?:cup|cups|teaspoon|teaspoons|tbsp|tablespoon|tablespoons|oz|ounce|ounces|pound|pounds|g|grams|kg|kilograms|ml|milliliters|l|liters|handful|pinch|pinches|dash|dashes|slice|slices|clove|cloves|package|packages|piece|pieces|milligrams|tsp|quart|quarts|pint|pints|fluid ounce|fluid ounces|gal|gallon|gallons|dl)\b)?\s*(.*)"
                 match = re.match(pattern, part)
                 name = match.group(3).strip() if match and match.group(3) else part.strip()
                 prev = quantity
                 quantity = match.group(1).strip() if match and match.group(1) else prev
                 measurement = match.group(2).strip() if match and match.group(2) else None
             # regex for descriptors and preparation
-            descriptor_pattern = r"\b(fresh|extra-virgin|whole wheat|lean|package|packaged|packed|box|boxed|jar|jarred|jars)\b"
+            descriptor_pattern = r"\b(fresh|extra-virgin|whole wheat|whole grain|dehydrated|heirloom|aged|low-fat|reduced-fat|lean|package|packaged|packed|box|boxed|jar|jarred|jars|ripe|canned|frozen|organic|large|small|medium|smoked|thick-cut|thinly|boneless|skinless|bone-in)\b"
             descriptor_match = re.search(descriptor_pattern, name.lower())
             if descriptor_match:
                 descriptor = descriptor_match.group(0).strip()
                 name = name.replace(descriptor, "").strip()
-            preparation_pattern = r"\b(finely chopped|chopped|shredded|finely shredded|minced|sliced|diced|grated|ground|julienned|peeled|squeezed|dried)\b"
+            preparation_pattern = r"\b(finely chopped|chopped|shredded|divided|finely shredded|minced|sliced|diced|grated|ground|julienned|peeled|squeezed|dried|roughly chopped|roughly diced|pureed|smashed|zested|beaten|marinated|mashed|sliced thinly|halved|quartered|cut into chunks|brushed|trimmed|cored|cubed|butterflied|crushed)\b"
             preparation_match = re.search(preparation_pattern, name.lower())
             if preparation_match:
                 preparation = preparation_match.group(0).strip()
@@ -97,9 +97,9 @@ def parse_steps(json_data, ingredient_names):
             if not sub_text:
                 continue
             # regex for tools and methods
-            tools_pattern = r"\b(oven|pot|skillet|baking pan|bowl|plate|aluminum foil|foil|tray|sheet|whisk|spatula|strainer|ladle|colander|saucepan)\b"
+            tools_pattern = r"\b(oven|pot|skillet|baking pan|bowl|plate|aluminum foil|foil|tray|sheet|whisk|spatula|strainer|ladle|colander|saucepan|grater|microplane|peeler|tongs|mortar|pestle|slotted spoon|mandoline|rolling pin|measuring cup|measuring spoon|baster|mixing bowl|blender|pressure cooker|air fryer)\b"
             tools = list(set(re.findall(tools_pattern, sub_text.lower())))
-            methods_pattern = r"\b(preheat|boil|cook|stir|mix|layer|bake|drain|broil|poach|roast|grill|steam)\b"
+            methods_pattern = r"\b(preheat|boil|cook|stir|mix|layer|bake|drain|broil|poach|roast|grill|steam|sear|saute|braise|whisk|knead|caramelize|marinate|simmer|parboil|blanch|whip|fold|beat|blend|pulse|scald|deglaze|fillet|infuse|deep-fry|deep fry|score|smoke)\b"
             methods = list(set(re.findall(methods_pattern, sub_text.lower())))
             # handle ingredients
             ingredients = list(set(filter(lambda ingredient: ingredient.lower() in sub_text.lower(), ingredient_names)))
