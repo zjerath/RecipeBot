@@ -58,15 +58,20 @@ def main():
         # if json easier to work with, add line below and refer to jsn in convo
         jsn = recipe_to_json(recipe)
         conversation = Conversation(jsn) # Conversation() assumes recipe object in JSON format ATM
+
+        # for i in range(len(jsn['steps'])):
+        #     print(jsn['steps'][i]['text'])
+        #     print('\n')
+
         print(f"Bot: Alright. So let's start working with \"{recipe.title}\". What do you want to do?")
         print("\n[1] Go over ingredients list")
         print("[2] Go over recipe steps.")
         # simulate user choice
         choice = input().strip()
         if choice == '1':
-            conversation.handle_request("What are the ingredients?")
+            print(conversation.handle_request("What are the ingredients?"))
         elif choice == '2':
-            conversation.handle_request("Go over recipe steps")
+            print(conversation.handle_request("Go over recipe steps"))
         else:
             print("Invalid choice. Please enter 1 or 2.")
         # simulate user choice

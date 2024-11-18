@@ -187,6 +187,7 @@ class Conversation:
         step_words = ['steps', 'instructions', 'make this', 'make it', 'cook this', 'cook it']
         tools_words = ['tools', 'equipment']
         method_words = ['methods']
+        # directions_words = ['directions', 'requirements']
         time_words = ['time', 'long', 'duration']
         all_words = ingredient_words + step_words + tools_words + method_words
 
@@ -260,8 +261,9 @@ class Conversation:
                 elif any(word in request for word in ingredient_words):
                     return(self.question_handler.return_ingredients(self.current_step))
                 elif any(word in request for word in time_words):
-                    return(self.question_handler.return_steps(self.current_step))
+                    return(self.question_handler.return_time(self.current_step))
                 elif any(word in request for word in tools_words):
                     return(self.question_handler.return_tools(self.current_step))
                 else:
-                    return("I don't know that information for the current step of this recipe. Please try asking again.")
+                    return(self.question_handler.return_directions(self.current_step))
+                    # return("I don't know that information for the current step of this recipe. Please try asking again.")

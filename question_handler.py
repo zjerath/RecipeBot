@@ -28,9 +28,9 @@ class QuestionHandler:
             Step-specific
         '''
         request_type_keywords = {
-            "General": ["how to", "how do"],
-            "Navigation": ["go", "proceed", "take me", "move", "navigate", "next", "previous"],
-            "Step": ["for this step"]
+            "General": ["how to", "how do", "what is"],
+            "Navigation": ["go", "proceed", "take me", "move", "navigate", "next", "previous", 'repeat', 'again'],
+            "Step": ["for this step"] 
         }
 
         for request_type in request_type_keywords:
@@ -72,6 +72,10 @@ class QuestionHandler:
             case _: # return methods for specific step 
                 methods_list = [f"{i+1}. {method}" for i, method in enumerate(self.recipe['steps'][step]['methods'])]
                 return f"Here are the methods used in step {step + 1} of {self.recipe['title']}:\n" + "\n".join(methods_list)
+    
+    def return_directions(self, step):
+        step_directions_info = self.recipe['steps'][step]['text']
+        return f"Here are the directions for this step: {step_directions_info}"
 
     # To do: format this better
     def return_time(self, step):
