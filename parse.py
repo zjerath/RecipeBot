@@ -65,7 +65,7 @@ def parse_ingredients(json_data):
                 quantity = match.group(1).strip() if match and match.group(1) else prev
                 measurement = match.group(2).strip() if match and match.group(2) else None
             # regex for descriptors and preparation
-            descriptor_pattern = r"\b(fresh|extra-virgin|whole wheat|whole grain|dehydrated|heirloom|aged|low-fat|reduced-fat|lean|package|packaged|packed|box|boxed|jar|jarred|jars|ripe|canned|frozen|organic|large|small|medium|smoked|thick-cut|thinly|boneless|skinless|bone-in)\b"
+            descriptor_pattern = r"\b(fresh|extra-virgin|whole wheat|whole grain|dehydrated|heirloom|aged|low-fat|reduced-fat|lean|package|packages|packaged|packed|box|boxed|jar|jarred|jars|ripe|can|cans|canned|frozen|organic|large|small|medium|smoked|thick-cut|thinly|boneless|skinless|bone-in)\b"
             descriptor_match = re.search(descriptor_pattern, name.lower())
             if descriptor_match:
                 descriptor = descriptor_match.group(0).strip()
