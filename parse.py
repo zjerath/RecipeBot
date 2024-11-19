@@ -111,7 +111,8 @@ def parse_steps(json_data, ingredient_names):
                         ingredients.append(ingredient)
                         break
             # handle time
-            time_pattern = r"(\d+/\d+|\d+\.\d+|\d+)\s*(second|second[s]|minute|minute[s]?|hour|hour[s]?)"
+            # time_pattern = r"(\d+/\d+|\d+\.\d+|\d+)\s*(second|second[s]|minute|minute[s]?|hour|hour[s]?)"
+            time_pattern = r"\b(\d+/\d+|\d+\.\d+|\d+)\b.*\b(second|second[s]|minute|minute[s]?|hour|hour[s]?)"
             time_match = re.search(time_pattern, sub_text.lower())
             if time_match:
                 duration_str = time_match.group(1)

@@ -154,4 +154,11 @@ class QuestionHandler:
         step_time_info = self.recipe['steps'][step]['time']
         if step_time_info['duration'] == "N/A" or step_time_info['unit'] == "N/A":
             return "There are no time specifications for the methods of this step."
+        
+        # return time for corresponding methods, if they exist
+        step_methods = self.recipe['steps'][step]['methods']
+        if step_methods:
+            method_str = " and ".join(step_methods)
+            return f"{method_str} for {step_time_info['duration']} {step_time_info['unit']}{'s' if step_time_info['duration'] != 1 else ''}"
+        
         return f"Carry out this step for {step_time_info['duration']} {step_time_info['unit']}{'s' if step_time_info['duration'] != 1 else ''}"
