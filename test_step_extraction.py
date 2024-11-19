@@ -4,6 +4,8 @@ from conversation import Conversation
 from question_handler import QuestionHandler
 import json
 from parse import fetch_recipe, extract_json_ld, parse_recipe, recipe_to_json
+import nltk
+from nltk.tokenize import sent_tokenize
 
 
 def ordinal_to_number(ordinal):
@@ -131,6 +133,77 @@ def main():
     #         # print(match.groups)
     #         print(match.group(1))
 
+def extract_time_info(recipe_text):
+    # Patterns to match durations and conditional phrases
+    time_patterns = [
+        r"\d+\s*(?:second[s]?|minute[s]?|hour[s]?|sec|min|hr[s]?)",  # Numeric durations with units
+        r"about\s+\d+\s*(?:second[s]?|minute[s]?|hour[s]?)",         # Approximate durations
+        r"for\s+\d+\s*(?:second[s]?|minute[s]?|hour[s]?)"            # 'for X time'
+    ] # add word boundary + arbitrary num chars?
+
+    # Patterns to match conditions
+    condition_patterns = [
+        r"until\s+[\w\s]+",        # Conditions like 'until golden brown'
+        r"once\s+[\w\s]+",         # Conditions like 'once dissolved'
+        r"when\s+[\w\s]+"          # Conditions like 'when bubbly'
+    ] # add word boundary + arbitrary num chars?
+
+    # Compile the patterns
+    time_regex = re.compile("|".join(time_patterns), re.IGNORECASE)
+    condition_regex = re.compile("|".join(condition_patterns), re.IGNORECASE)
+
+    # Find all matches
+    times = time_regex.findall(recipe_text)
+    conditions = condition_regex.findall(recipe_text)
+
+    # Extract structured results
+        # duration : time value (for 10 minutes)
+        # condition : condition value (until brown)
+    extracted_info = {} 
+    for time in times:
+        # extracted_info.append({"type": "time", "value": time.strip()})
+        cleaned_time = re.sub(r"^(for|about)\s+", "", time, flags=re.IGNORECASE)
+        extracted_info['duration'] = cleaned_time.strip()
+    if not times:
+        extracted_info['duration'] = None
+    for condition in conditions:
+        # Remove the keywords ('until', 'once', 'when') from the matched condition
+        # cleaned_condition = re.sub(r"^(until|once|when)\s+", "", condition, flags=re.IGNORECASE)
+        # extracted_info.append({"type": "condition", "value": condition.strip()})
+        extracted_info['condition'] = condition.strip()
+    if not conditions:
+        extracted_info['condition'] = None
+
+    return extracted_info
+
+def foo():
+    # Download the punkt tokenizer if not already downloaded
+    nltk.download('punkt')
+
+    # Example usage
+    recipe_text = """
+        Preheat the oven to 350°F. Bake for 30 minutes or until golden brown.
+        Simmer for about 20 minutes until thickened.
+        Stir continuously for 5 minutes. Once the sauce is smooth, remove from heat.
+        Mix for 5 minutes, or once the sauce is smooth.
+    """
+    a = """
+        my name is jimin.
+        i like cheese.
+        i drink coffee.
+    """
+
+    for sentence in sent_tokenize(recipe_text):
+        time_info = extract_time_info(sentence)
+        print(sentence)
+        print(time_info)
+        # for info in time_info:
+        #     print(f"{info['type'].capitalize()}: {info['value']}")
+        print('\n')
+
+
+
 
 if __name__ == "__main__":
-    main()
+    # main()
+    foo()

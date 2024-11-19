@@ -152,13 +152,17 @@ class QuestionHandler:
     # To do: format this better
     def return_time(self, step):
         step_time_info = self.recipe['steps'][step]['time']
-        if step_time_info['duration'] == "N/A" or step_time_info['unit'] == "N/A":
+        duration_info = step_time_info['duration']
+        condition_info = step_time_info['condition']
+        if duration_info is None and condition_info is None:
             return "There are no time specifications for the methods of this step."
         
         # return time for corresponding methods, if they exist
         step_methods = self.recipe['steps'][step]['methods']
-        if step_methods:
-            method_str = " and ".join(step_methods)
-            return f"{method_str} for {step_time_info['duration']} {step_time_info['unit']}{'s' if step_time_info['duration'] != 1 else ''}"
         
-        return f"Carry out this step for {step_time_info['duration']} {step_time_info['unit']}{'s' if step_time_info['duration'] != 1 else ''}"
+        if duration_info and condition_info: # if time duration & qualitative description specified
+            return f"{'Carry out this step' if not step_methods else ' and '.join(step_methods)} {condition_info}, {'for about ' + duration_info}"
+        elif duration_info: # only time duration specified
+            return f"{'Carry out this step' if not step_methods else ' and '.join(step_methods)} {'for ' + duration_info}"
+        else: # only qualitative description specified
+            return f"{'Carry out this step' if not step_methods else ' and '.join(step_methods)} {condition_info}"
