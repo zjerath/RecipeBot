@@ -79,6 +79,7 @@ async def on_message(message):
             await message.channel.send(f"Alright. So let's start working with \"{recipe.title}\". \nWould you like to start with the ingredients list or the recipe steps?")
             
         except Exception as e:
+            await message.channel.send("I'm sorry, I'm having trouble with that message. Please try again with a different message.")
             print(f"An error occurred: {e}")
 
         conversations[str(message.author.id)] = conversation   

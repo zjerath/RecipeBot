@@ -75,7 +75,7 @@ class QuestionHandler:
             Step-specific
         '''
         request_type_keywords = {
-            "General": ["how to", "how do", "what is"],
+            "General": ["how to", "how do", "what is", "steps"],
             "Navigation": ["go", "proceed", "take me", "move", "navigate", "next", "previous", 'repeat', 'again'],
             "Step": ["step", "long", "time"] # time requests typically ask about step-specific methods  
         }

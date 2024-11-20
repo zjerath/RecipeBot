@@ -181,51 +181,75 @@ class Conversation:
                 else:
                     # Deal with vague queries (How to cook that, How to make that, etc.)
                     precursor, demonstrative, reference = self.extract_demonstrative_reference(request)
-                    phrase = f"{precursor} {demonstrative} {reference}"
+                    if not reference: 
+                        reference = ""
+                    if not precursor:
+                        precursor = ""
+                    phrase = f"{precursor} {demonstrative} {reference}".strip()
                     print(f"precursor: {precursor} | demonstrative: {demonstrative} | reference: {reference}")
                     
                     if demonstrative:
                         # Get the current step's text
                         current_step_text = self.recipe['steps'][self.current_step]['text']
 
-                        
-                        if not reference: 
-                            reference = ""
-                        if not precursor:
-                            precursor = ""
+                        ingredients = self.extract_subject_ingredient(current_step_text)
+                        methods = self.extract_subject_method(current_step_text)
+                        tools = self.extract_subject_tool(current_step_text)
 
 # Reference replacements
                         if reference == "ingredient":
-                            replacement = self.extract_subject_ingredient(current_step_text)
-                            request = request.replace(phrase, precursor + " " + replacement)
+                            replacement = ingredients
+                            if len(replacement) > 1:
+                                return(f"Which of the following ingredients are you referring to? \n{', '.join(replacement)} \nPlease clarify your request.")
+                            elif replacement:
+                                replacement = replacement[0]
+                                request = request.replace(phrase, precursor + " " + replacement)
                         elif reference == "tool":
-                            replacement = self.extract_subject_tool(current_step_text)
-                            request = request.replace(phrase, precursor + " " + replacement)
+                            replacement = tools
+                            if len(replacement) > 1:
+                                return(f"Which of the following tools are you referring to? \n{', '.join(replacement)} \nPlease clarify your request.")
+                            elif replacement:
+                                replacement = replacement[0]
+                                request = request.replace(phrase, precursor + " " + replacement)
                         elif reference == "method":
-                            replacement = self.extract_subject_method(current_step_text)
-                            request = request.replace(phrase, precursor + " " + replacement)
+                            replacement = methods
+                            if len(replacement) > 1:
+                                return(f"Which of the following methods are you referring to? \n{', '.join(replacement)} \nPlease clarify your request.")
+                            elif replacement:
+                                replacement = replacement[0]
+                                request = request.replace(phrase, precursor + " " + replacement)
                         
                         # Precursor replacements
                         elif precursor == "do":
                             return(current_step_text)
                         elif precursor == "of":
-                            replacement = self.extract_subject_ingredient(current_step_text)
-                            second_replacement = self.extract_subject_tool(current_step_text)
+                            replacement = ingredients
+                            second_replacement = tools
                             if replacement: 
-                                request = request.replace(phrase, precursor + " " + replacement)
+                                if len(replacement) > 1:
+                                    return(f"Which of the following ingredients are you referring to? \n{', '.join(replacement)} \nPlease clarify your request.")
+                                elif replacement:
+                                    replacement = replacement[0]
+                                    request = request.replace(phrase, precursor + " " + replacement)
                             elif second_replacement:
-                                request = request.replace(phrase, precursor + " " + second_replacement)
+                                if len(second_replacement) > 1:
+                                    return(f"Which of the following tools are you referring to? \n{', '.join(second_replacement)} \nPlease clarify your request.")
+                                elif second_replacement:
+                                    second_replacement = second_replacement[0]
+                                    request = request.replace(phrase, precursor + " " + second_replacement)
                         elif precursor == "cook" or precursor == "prepare" or precursor == "get" or precursor == "make" or precursor == "replace":
-                            replacement = self.extract_subject_ingredient(current_step_text)
+                            replacement = ingredients
                             if len(replacement) > 1:
-                                return(f"Which of the following ingredients are you referring to? {', '.join(replacement)}?")
+                                return(f"Which of the following ingredients are you referring to? \n{', '.join(replacement)} \nPlease clarify your request.")
                             elif replacement:
+                                replacement = replacement[0]
                                 request = request.replace(phrase, precursor + " " + replacement)
                         elif precursor == "use":
-                            replacement = self.extract_subject_tool(current_step_text)
+                            replacement = tools
                             if len(replacement) > 1:
-                                return(f"Which of the following tools are you referring to? {', '.join(replacement)}?")
+                                return(f"Which of the following tools are you referring to? \n{', '.join(replacement)} \nPlease clarify your request.")
                             elif replacement:
+                                replacement = replacement[0]
                                 request = request.replace(phrase, precursor + " " + replacement)
                         else:
                             # Cannot determine what the user is asking for
@@ -236,7 +260,7 @@ class Conversation:
                     if "how much" in request.lower():
                         subject = self.extract_subject_ingredient(request)
                         if len(subject) > 1:
-                            return(f"Which of the following ingredients are you referring to? {', '.join(subject)}?")
+                            return(f"Which of the following ingredients are you referring to? \n{', '.join(subject)} \nPlease clarify your request.")
                         elif subject:
                             print(f"subject: {subject}")
                             for ingredient in self.recipe['ingredients']:
