@@ -18,3 +18,23 @@ https://discord.gg/HmNm343g7S
 4. Talk to the bot like you would to another person (e.g. "What are the ingredients needed?")
 5. Type "stop" to end the conversation
 
+# Question Answering Goals: Example Questions
+1. Recipe retrieval and display.
+    - "Go over the ingredients list."
+    - "What tools do I need?"
+2. Navigation utterances.
+    - "Go to the next step."
+    - "Previous step."
+    - "Navigate to the 5th step." (must specify a number i.e. not "fifth")
+    - "Repeat please."
+3. Asking about the parameters of the current step.
+    - "What tools do I need for this step?"
+    - "What are the ingredients for this step?"
+    - "How long do I <cooking method>?"
+    - "Tell me the methods for this step."
+4. Simple "what is" questions.
+    - "What is a <tool being mentioned>?"
+5. Specific "how to" questions.
+    - "How do I <specific technique>?"
+6. Vague "how to" questions ("How do I do that?" – use conversation history to infer what “that” refers to)
+

@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import json
+from dotenv import load_dotenv
 import os
 import re
 from conversation import Conversation
@@ -15,6 +16,9 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 # Store user IDs who have mentioned the bot
 conversations = {}
+
+# load environment variables from .env file
+load_dotenv()
 
 def extract_url(message_content):
     """Extract and validate AllRecipes URL from message content"""
