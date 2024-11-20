@@ -60,21 +60,18 @@ class Conversation:
             case 'Previous':
                 if self.current_step > 0:
                     self.current_step -= 1
-                    return(f"Navigated to step {self.current_step + 1} successfully.")
                 else:
-                    return(f"Unable to navigate to previous step as we're already at the first step.")
+                    return(f"You're already at the first step.")
             case 'Next':
                 if self.current_step < len(self.recipe['steps']) - 1: 
                     self.current_step += 1
-                    return(f"Navigated to step {self.current_step + 1} successfully.")
                 else:
-                    return(f"Unable to navigate to next step as we're already at the last step.")
+                    return(f"You've reached the end of the recipe.")
             case 'Nth':
                 step_num = self.question_handler.extract_step_number(user_query)
                 print(f"request: {user_query} | step_num: {step_num}")
                 if step_num > 0 and step_num <= len(self.recipe['steps']):
                     self.current_step = step_num - 1 # self.current_step is 0 indexed
-                    return(f"Navigated to step {step_num} successfully.")
                 else:
                     return(f"Invalid step number: this recipe has {len(self.recipe['steps'])} steps.")
             case _:
@@ -189,8 +186,11 @@ class Conversation:
                         return(self.question_handler.build_google_search_query(request))
 
             case "Navigation":
-                self.update_step(request)
-                return(f"Step {self.current_step + 1}: {self.recipe['steps'][self.current_step]['text']}")
+                msg = self.update_step(request)
+                if msg:
+                    return(f"{msg}\nStep {self.current_step + 1}: {self.recipe['steps'][self.current_step]['text']}")
+                else:
+                    return(f"Step {self.current_step + 1}: {self.recipe['steps'][self.current_step]['text']}")
             
             case "Step":
                 if any(word in request for word in method_words):
