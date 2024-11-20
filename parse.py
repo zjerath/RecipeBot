@@ -45,39 +45,36 @@ def parse_ingredients(json_data):
         if "to taste" in item.lower():
             item = item.replace("to taste", "").strip()
             quantity = "to taste"
-        # if multiple ingredients in same line
-        ingredient_parts = re.split(r"\band\b", item)
-        for part in ingredient_parts:
-            # handle measurements in parentheses
-            parenthesis_pattern = r"(\d+/\d+|\d+\.\d+|\d+)?\s*\((.*?)\)\s*(.*)"
-            match_parenthesis = re.match(parenthesis_pattern, part)
-            if match_parenthesis:
-                # extract name, quantity, measurement
-                name = match_parenthesis.group(3).strip()
-                quantity = match_parenthesis.group(1).strip() if match_parenthesis.group(1) else "1"
-                measurement = match_parenthesis.group(2).strip()
-            # regex to extract name, quantity (fractional or decimal), and measurement
-            else:
-                pattern = r"(\d+/\d+|\d+\.\d+|\d+)?\s*(\b(?:cup|cups|teaspoon|teaspoons|tbsp|tablespoon|tablespoons|oz|ounce|ounces|pound|pounds|g|grams|kg|kilograms|ml|milliliters|l|liters|handful|pinch|pinches|dash|dashes|slice|slices|clove|cloves|package|packages|piece|pieces|milligrams|tsp|quart|quarts|pint|pints|fluid ounce|fluid ounces|gal|gallon|gallons|dl)\b)?\s*(.*)"
-                match = re.match(pattern, part)
-                name = match.group(3).strip() if match and match.group(3) else part.strip()
-                prev = quantity
-                quantity = match.group(1).strip() if match and match.group(1) else prev
-                measurement = match.group(2).strip() if match and match.group(2) else None
-            # regex for descriptors and preparation
-            descriptor_pattern = r"\b(fresh|extra-virgin|whole wheat|whole grain|dehydrated|heirloom|aged|low-fat|reduced-fat|lean|package|packages|packaged|packed|box|boxed|jar|jarred|jars|ripe|can|cans|canned|frozen|organic|large|small|medium|smoked|thick-cut|thinly|boneless|skinless|bone-in)\b"
-            descriptor_match = re.search(descriptor_pattern, name.lower())
-            if descriptor_match:
-                descriptor = descriptor_match.group(0).strip()
-                name = name.replace(descriptor, "").strip()
-            preparation_pattern = r"\b(finely chopped|chopped|shredded|divided|finely shredded|minced|sliced|diced|grated|ground|julienned|peeled|squeezed|dried|roughly chopped|roughly diced|pureed|smashed|zested|beaten|marinated|mashed|sliced thinly|halved|quartered|cut into chunks|brushed|trimmed|cored|cubed|butterflied|crushed)\b"
-            preparation_match = re.search(preparation_pattern, name.lower())
-            if preparation_match:
-                preparation = preparation_match.group(0).strip()
-                name = name.replace(preparation, "").strip()
-            # format ingredient
-            ingredient = Ingredient(name, quantity, measurement, descriptor, preparation)
-            ingredients.append(ingredient)
+        # handle measurements in parentheses
+        parenthesis_pattern = r"(\d+/\d+|\d+\.\d+|\d+)?\s*\((.*?)\)\s*(.*)"
+        match_parenthesis = re.match(parenthesis_pattern, item)
+        if match_parenthesis:
+            # extract name, quantity, measurement
+            name = match_parenthesis.group(3).strip()
+            quantity = match_parenthesis.group(1).strip() if match_parenthesis.group(1) else "1"
+            measurement = match_parenthesis.group(2).strip()
+        # regex to extract name, quantity (fractional or decimal), and measurement
+        else:
+            pattern = r"(\d+/\d+|\d+\.\d+|\d+)?\s*(\b(?:cup|cups|teaspoon|teaspoons|tbsp|tablespoon|tablespoons|oz|ounce|ounces|pound|pounds|g|grams|kg|kilograms|ml|milliliters|l|liters|handful|pinch|pinches|dash|dashes|slice|slices|clove|cloves|package|packages|piece|pieces|milligrams|tsp|quart|quarts|pint|pints|fluid ounce|fluid ounces|gal|gallon|gallons|dl)\b)?\s*(.*)"
+            match = re.match(pattern, item)
+            name = match.group(3).strip() if match and match.group(3) else item.strip()
+            prev = quantity
+            quantity = match.group(1).strip() if match and match.group(1) else prev
+            measurement = match.group(2).strip() if match and match.group(2) else None
+        # regex for descriptors and preparation
+        descriptor_pattern = r"\b(fresh|extra-virgin|whole wheat|whole grain|dehydrated|heirloom|aged|low-fat|reduced-fat|lean|package|packages|packaged|packed|box|boxed|jar|jarred|jars|ripe|can|cans|canned|frozen|organic|large|small|medium|smoked|thick-cut|thinly|boneless|skinless|bone-in)\b"
+        descriptor_match = re.search(descriptor_pattern, name.lower())
+        if descriptor_match:
+            descriptor = descriptor_match.group(0).strip()
+            name = name.replace(descriptor, "").strip()
+        preparation_pattern = r"\b(finely chopped|chopped|shredded|divided|finely shredded|minced|sliced|diced|grated|ground|julienned|peeled|squeezed|dried|roughly chopped|roughly diced|pureed|smashed|zested|beaten|marinated|mashed|sliced thinly|halved|quartered|cut into chunks|brushed|trimmed|cored|cubed|butterflied|crushed)\b"
+        preparation_match = re.search(preparation_pattern, name.lower())
+        if preparation_match:
+            preparation = preparation_match.group(0).strip()
+            name = name.replace(preparation, "").strip()
+        # format ingredient
+        ingredient = Ingredient(name, quantity, measurement, descriptor, preparation)
+        ingredients.append(ingredient)
     return raw_ingredients, ingredients
 
 # parse time info for a given step
