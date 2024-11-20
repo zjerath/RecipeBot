@@ -145,41 +145,73 @@ class Conversation:
     '''
     # Helper function to extract demonstrative references and their subjects
     def extract_demonstrative_reference(self, text):
-        doc = self.nlp(text)
-        for token in doc:
-            # Check for demonstrative determiners/pronouns
-            if token.lemma_ in ["this", "that", "these", "those", "it"]:
-                # Look for the verb phrase that follows
-                precursor_words = ["do", "make", "cook", "prepare", "get", "of", "replace"]
-                if any(token.head.lemma_ == word for word in precursor_words):
-                    # Get the full verb phrase including the demonstrative
-                    verb_phrase = " ".join([token.head.text, token.text])
-                    return (token.head.lemma_, verb_phrase)
-                # Look for noun phrases
-                else: 
-                    return (token.head.lemma_, token.text)
-        return (None, None)
+        text = text.lower()
+        precursor_words = ["do", "make", "cook", "prepare", "get", "of", "replace"]
+        demonstratives = ["this", "that", "these", "those", "it"]
+        reference_words = ["step", "ingredient", "tool", "method"]
+        
+        # Split text into words
+        words = text.split()
+        
+        for i in range(len(words)):
+            # Check if word is a demonstrative
+            if words[i] in demonstratives:
+                # Check word before for precursor
+                if i > 0 and words[i-1] in precursor_words:
+                    # Check if there's a reference word after
+                    if i+1 < len(words) and words[i+1] in reference_words:
+                        return (words[i-1], words[i], words[i+1])
+                    return (words[i-1], words[i], None)
+                # Check word after for precursor 
+                elif i+1 < len(words) and words[i+1] in precursor_words:
+                    # Check if there's a reference word after precursor
+                    if i+2 < len(words) and words[i+2] in reference_words:
+                        return (words[i+1], words[i], words[i+2])
+                    return (words[i+1], words[i], None)
+                # No precursor found
+                else:
+                    # Check if there's a reference word after
+                    if i+1 < len(words) and words[i+1] in reference_words:
+                        return (None, words[i], words[i+1])
+                    return (None, words[i], None)
+                    
+        return (None, None, None)
     
     def extract_subject_ingredient(self, request):
-        doc = self.nlp(request)
-        for token in doc:
-            if token.pos_ == "NOUN" and token.text.lower() in [ingredient['name'].lower() for ingredient in self.recipe['ingredients']]:
-                return token.text
-        return None
+        request = request.lower()
+        ingredients = [ingredient['name'].lower() for ingredient in self.recipe['ingredients']]
+        found_ingredients = []
+        for ingredient in ingredients:
+            if ingredient in request:
+                found_ingredients.append(ingredient)
+        if found_ingredients:
+            return found_ingredients
+        else:
+            return None
     
     def extract_subject_method(self, request):
-        doc = self.nlp(request)
-        for token in doc:
-            if token.pos_ == "VERB" and token.text.lower() in [method.lower() for method in self.recipe['methods']]:
-                return token.text
-        return None
+        request = request.lower()
+        methods = [method.lower() for method in self.recipe['methods']]
+        found_methods = []
+        for method in methods:
+            if method in request:
+                found_methods.append(method)
+        if found_methods:
+            return found_methods
+        else:
+            return None
     
     def extract_subject_tool(self, request):
-        doc = self.nlp(request)
-        for token in doc:
-            if token.pos_ == "NOUN" and token.text.lower() in [tool.lower() for tool in self.recipe['tools']]:
-                return token.text
-        return None
+        request = request.lower()
+        tools = [tool.lower() for tool in self.recipe['tools']]
+        found_tools = []
+        for tool in tools:
+            if tool in request:
+                found_tools.append(tool)
+        if found_tools:
+            return found_tools
+        else:
+            return None
     
     def handle_request(self, request):
         # Define keywords for identifying question type
@@ -213,39 +245,78 @@ class Conversation:
                 # If the question is not about the recipe, search Google
                 else:
                     # Deal with vague queries (How to cook that, How to make that, etc.)
-                    dem_word, dem_subject = self.extract_demonstrative_reference(request)
-                    print(f"dem_word: {dem_word} | dem_subject: {dem_subject}")
+                    precursor, demonstrative, reference = self.extract_demonstrative_reference(request)
+                    phrase = f"{precursor} {demonstrative} {reference}"
+                    print(f"precursor: {precursor} | demonstrative: {demonstrative} | reference: {reference}")
                     
-                    if dem_subject:
+                    if demonstrative:
                         # Get the current step's text
                         current_step_text = self.recipe['steps'][self.current_step]['text']
-                        # Replace the demonstrative reference with the subject from current step
-                        if dem_word == "do":
-                            return(current_step_text)
-                        elif dem_word == "cook" or dem_word == "prepare" or dem_word == "get" or dem_word == "make" or dem_word == "of" or dem_word == "replace":
+
+                        
+                        if not reference: 
+                            reference = ""
+                        if not precursor:
+                            precursor = ""
+
+# Reference replacements
+                        if reference == "ingredient":
                             replacement = self.extract_subject_ingredient(current_step_text)
-                            if replacement:
-                                request = request.replace(dem_subject, dem_word + " " + replacement)
-                        elif dem_word == "use":
+                            request = request.replace(phrase, precursor + " " + replacement)
+                        elif reference == "tool":
                             replacement = self.extract_subject_tool(current_step_text)
-                            if replacement:
-                                request = request.replace(dem_subject, dem_word + " " + replacement)
+                            request = request.replace(phrase, precursor + " " + replacement)
+                        elif reference == "method":
+                            replacement = self.extract_subject_method(current_step_text)
+                            request = request.replace(phrase, precursor + " " + replacement)
+                        
+                        # Precursor replacements
+                        elif precursor == "do":
+                            return(current_step_text)
+                        elif precursor == "of":
+                            replacement = self.extract_subject_ingredient(current_step_text)
+                            second_replacement = self.extract_subject_tool(current_step_text)
+                            if replacement: 
+                                request = request.replace(phrase, precursor + " " + replacement)
+                            elif second_replacement:
+                                request = request.replace(phrase, precursor + " " + second_replacement)
+                        elif precursor == "cook" or precursor == "prepare" or precursor == "get" or precursor == "make" or precursor == "replace":
+                            replacement = self.extract_subject_ingredient(current_step_text)
+                            if len(replacement) > 1:
+                                return(f"Which of the following ingredients are you referring to? {', '.join(replacement)}?")
+                            elif replacement:
+                                request = request.replace(phrase, precursor + " " + replacement)
+                        elif precursor == "use":
+                            replacement = self.extract_subject_tool(current_step_text)
+                            if len(replacement) > 1:
+                                return(f"Which of the following tools are you referring to? {', '.join(replacement)}?")
+                            elif replacement:
+                                request = request.replace(phrase, precursor + " " + replacement)
                         else:
                             # Cannot determine what the user is asking for
-                            return(f"I don't know what you're referring to by \"{dem_word}\". Please try asking again.")
+                            return(f"I don't know what you're referring to by \"{phrase}\". Please try asking again.")
+                        
+
+                    print(f"request: {request}")
                     if "how much" in request.lower():
                         subject = self.extract_subject_ingredient(request)
-                        print(f"subject: {subject}")
-                        found = False
-                        for ingredient in self.recipe['ingredients']:
-                            if ingredient['name'] == subject:
-                                if ingredient['measurement']:
-                                    return(f"You need {ingredient['quantity']} {ingredient['measurement']} of {ingredient['name']}")
-                                else:
-                                    return(f"You need {ingredient['quantity']} {ingredient['name']}")
-                                found = True
-                        if not found:
+                        if len(subject) > 1:
+                            return(f"Which of the following ingredients are you referring to? {', '.join(subject)}?")
+                        elif subject:
+                            print(f"subject: {subject}")
+                            for ingredient in self.recipe['ingredients']:
+                                if ingredient['name'] == subject:
+                                    found = True
+                                    if ingredient['measurement']:
+                                        return(f"You need {ingredient['quantity']} {ingredient['measurement']} of {ingredient['name']}")
+                                    else:
+                                        return(f"You need {ingredient['quantity']} {ingredient['name']}")
                             return("I don't know that ingredient. Please try asking again.")
+                    elif "how long" in request.lower():
+                        if self.recipe['steps'][self.current_step]['time']['duration'] != "N/A":
+                            return(f"{self.recipe['steps'][self.current_step]['time']['duration']} {self.recipe['steps'][self.current_step]['time']['unit']}")
+                        else:
+                            return("I don't know the time required for this step.")
                     else:
                         # Actually deal with the query now
                         return(self.question_handler.build_google_search_query(request))
