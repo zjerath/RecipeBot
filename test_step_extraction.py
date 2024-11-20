@@ -201,6 +201,9 @@ def foo():
         #     print(f"{info['type'].capitalize()}: {info['value']}")
         print('\n')
 
+    request = "how to bake cheese"
+    if "how much" in request.lower() or "how many" in request.lower():
+        print("yes")
 
 
 

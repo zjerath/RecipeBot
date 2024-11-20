@@ -79,16 +79,7 @@ class Conversation:
                     return(f"Invalid step number: this recipe has {len(self.recipe['steps'])} steps.")
             case _:
                 return("Unknown navigation request type.")
-    
-    '''
-    Basic request handling for:
-    - General requests 
-    - Recipe navigation requests
-    - Requesting step-specific parameters
 
-    To do:
-    - handle step navigation and step specific parameters simultaneously?
-    '''
     # Helper function to extract demonstrative references and their subjects
     def extract_demonstrative_reference(self, text):
         doc = self.nlp(text)
@@ -180,7 +171,7 @@ class Conversation:
                         else:
                             # Cannot determine what the user is asking for
                             return(f"I don't know what you're referring to by \"{dem_word}\". Please try asking again.")
-                    if "how much" or "how many" in request.lower():
+                    if "how much" in request.lower() or "how many" in request.lower():
                         subject = self.extract_subject_ingredient(request)
                         print(f"subject: {subject}")
                         found = False
@@ -191,7 +182,7 @@ class Conversation:
                                 else:
                                     return(f"You need {ingredient['quantity']} {ingredient['name']}")
                                 found = True
-                        if not found:
+                        if not found:   
                             return("I don't know that ingredient. Please try asking again.")
                     else:
                         # Actually deal with the query now
