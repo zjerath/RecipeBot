@@ -55,9 +55,15 @@ class QuestionHandler:
             user_input = "Can we go to the next step?"
             print(detect_navigation(user_input))  # Output: "Next Step"
         '''
-        if re.search(r"\b(?:go to|navigate to|move to|proceed to|take me to)\b.*\b((\d+)(?:st|nd|rd|th)?|first|last)\b.*\b(?:step|instruction)?\b.*", user_query, re.IGNORECASE) or re.search(r"\b(?:go to|navigate to|move to|proceed to|take me to)\b \b(?:step|instruction)\b \b(\d+)\b.*", user_query, re.IGNORECASE):
-            return "Nth"
-        elif re.search(r".*\b(next|proceed|move|advance)\b.*", user_query, re.IGNORECASE):
+        nth_step_patterns = [
+            r"\b(?:go to|navigate to|move to|proceed to|take me to)\b.*\b((\d+)(?:st|nd|rd|th)?|first|last)\b.*\b(?:step|instruction)?\b.*",
+            r"\b(?:go to|navigate to|move to|proceed to|take me to)\b \b(?:step|instruction)\b \b(\d+)\b.*",
+            r"step \d+"
+        ]
+        for pattern in nth_step_patterns:
+            if re.search(pattern, user_query, re.IGNORECASE):
+                return "Nth"
+        if re.search(r".*\b(next|proceed|move|advance)\b.*", user_query, re.IGNORECASE):
             return "Next"
         elif re.search(r".*\b(previous|go back|return|back to|last|prior)\b.*", user_query, re.IGNORECASE):
             return "Previous"
@@ -82,10 +88,8 @@ class QuestionHandler:
 
         for request_type in request_type_keywords:
             if any(i.lower() in request.lower() for i in request_type_keywords[request_type]):
-                if request_type == "Step":
-                    # any request involving step & number should be navigation
-                    if re.search(r'\d+', request):
-                        return "Navigation"
+                if request_type == "Step" and re.search(r"step \d+", request, re.IGNORECASE): # any request involving step & number should be navigation
+                    return "Navigation"
                 return request_type
         # if no request type match found, classify as general request
         return "General"
