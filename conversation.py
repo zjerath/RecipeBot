@@ -180,7 +180,7 @@ class Conversation:
                         else:
                             # Cannot determine what the user is asking for
                             return(f"I don't know what you're referring to by \"{dem_word}\". Please try asking again.")
-                    if "how much" in request.lower():
+                    if "how much" or "how many" in request.lower():
                         subject = self.extract_subject_ingredient(request)
                         print(f"subject: {subject}")
                         found = False
