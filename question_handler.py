@@ -43,25 +43,6 @@ class QuestionHandler:
             return int(step_numbers[0])
         return None
     
-        # # Regular expressions to capture the nth step
-        # navigation_patterns = [
-        #     r"\b(?:go to|navigate to|move to|proceed to|take me to)\b.*\b(\d+)(?:st|nd|rd|th)?\b.*\b(?:step|instruction)\b.*",
-        #     r"\b(?:go to|navigate to|move to|proceed to|take me to)\b \b(?:step|instruction)\b \b(\d+)\b.*", #[a-zA-Z]+
-        # ]
-        
-        # for pattern in navigation_patterns:
-        #     match = re.search(pattern, request, re.IGNORECASE)
-        #     if match:
-        #         step = match.group(1)  # Capture the step part
-        #         print(f"Request: {request} | Step: {int(step)}")
-        #         return int(step)
-                # # Check if it's a digit and return as an integer
-                # if step.isdigit():
-                #     return int(step)
-                # # Otherwise, attempt to convert ordinal to a number
-                # return self.ordinal_to_number(step.lower())
-        # return None  # Return None if no step is found
-    
     def detect_navigation_type(self, user_query):
         '''
         Given a user (navigation) request, determine whether they are asking to proceed to:
@@ -101,6 +82,10 @@ class QuestionHandler:
 
         for request_type in request_type_keywords:
             if any(i.lower() in request.lower() for i in request_type_keywords[request_type]):
+                if request_type == "Step":
+                    # any request involving step & number should be navigation
+                    if re.search(r'\d+', request):
+                        return "Navigation"
                 return request_type
         # if no request type match found, classify as general request
         return "General"
