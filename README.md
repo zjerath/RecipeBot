@@ -20,13 +20,14 @@ https://discord.gg/HmNm343g7S
 
 # Question Answering Goals: Example Questions
 1. Recipe retrieval and display.
-    - "Go over the ingredients list."
+    - "Tell me the ingredients for this recipe."
     - "What tools do I need?"
+    - "List all the steps of this recipe."
 2. Navigation utterances.
-    - "Go to the next step."
-    - "Previous step."
-    - "Navigate to the 5th step." (must specify a number i.e. not "fifth")
-    - "Repeat please."
+    - "Go to the next step", "Next step"
+    - "Go back", "Previous step"
+    - "Navigate to the 5th step", "Go to step 8" (outside of "first"/"last", must specify a number i.e. not "fifth")
+    - "Repeat", "Say that again"
 3. Asking about the parameters of the current step.
     - "What tools do I need for this step?"
     - "What are the ingredients for this step?"
