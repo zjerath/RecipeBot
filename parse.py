@@ -150,16 +150,9 @@ def parse_steps(json_data, ingredient_names):
                         ingredients.append(ingredient)
                         break
             # handle time
-            # time_pattern = r"\b(\d+/\d+|\d+\.\d+|\d+)\b.*\b(second|second[s]|minute|minute[s]?|hour|hour[s]?)"
-            # time_match = re.search(time_pattern, sub_text.lower())
-            # if time_match:
-            #     duration_str = time_match.group(1)
-            #     duration = float(duration_str)
-            #     unit = time_match.group(2)
-            #     time = {"duration": duration, "unit": unit}
-            # else:
-            #     time = None
             time = parse_time(sub_text)                
+            
+            # create step object and add to list of steps
             step_obj = Step(step_number=step_counter, text=sub_text, ingredients=ingredients, tools=tools, methods=methods, time=time)
             steps.append(step_obj)
             step_counter += 1
