@@ -259,13 +259,14 @@ class Conversation:
                     print(f"request: {request}")
                     if "how much" in request.lower():
                         subject = self.extract_subject_ingredient(request)
+                        if not subject: 
+                            return("I don't know what ingredient you're referring to. Please try asking again.")
                         if len(subject) > 1:
                             return(f"Which of the following ingredients are you referring to? \n{', '.join(subject)} \nPlease clarify your request.")
                         elif subject:
                             print(f"subject: {subject}")
                             for ingredient in self.recipe['ingredients']:
-                                if ingredient['name'] == subject:
-                                    found = True
+                                if ingredient['name'] == subject[0]:
                                     if ingredient['measurement']:
                                         return(f"You need {ingredient['quantity']} {ingredient['measurement']} of {ingredient['name']}")
                                     else:
