@@ -8,4 +8,4 @@ Steps to Run:
 5. Type "stop" to end the conversation.
 
 File Structure:
-Our main.py file contains the script used to run our program locally. The code for running on the discord server is in app.py. Parsing is handled in representation.py and parse.py. Conversation code and logic can be found in conversation.py, question_handler.py, and handle_questions.py.
+Our main.py file contains the script used to run our program locally. The code for running on the discord server is in app.py. Parsing is handled in representation.py and parse.py. Conversation code and logic can be found in conversation.py and question_handler.py.
