@@ -216,10 +216,7 @@ class QuestionHandler:
         for ingredient in ingredients:
             if ingredient in request:
                 found_ingredients.append(ingredient)
-        if found_ingredients:
-            return found_ingredients
-        else:
-            return None
+        return found_ingredients
     
     def extract_subject_method(self, request):
         """
@@ -232,10 +229,7 @@ class QuestionHandler:
         for method in methods:
             if method in request:
                 found_methods.append(method)
-        if found_methods:
-            return found_methods
-        else:
-            return None
+        return found_methods
     
     def extract_subject_tool(self, request):
         """
@@ -248,7 +242,4 @@ class QuestionHandler:
         for tool in tools:
             if tool in request:
                 found_tools.append(tool)
-        if found_tools:
-            return found_tools
-        else:
-            return None
+        return found_tools

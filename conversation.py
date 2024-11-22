@@ -100,14 +100,14 @@ class Conversation:
                 else:
                     # Deal with vague queries (How to cook that, How to make that, etc.)
                     precursor, demonstrative, reference = self.question_handler.extract_demonstrative_reference(request)
-                    if not reference: 
+                    if reference is None: 
                         reference = ""
-                    if not precursor:
+                    if precursor is None:
                         precursor = ""
                     phrase = f"{precursor} {demonstrative} {reference}".strip()
                     print(f"precursor: {precursor} | demonstrative: {demonstrative} | reference: {reference}")
                     
-                    if demonstrative:
+                    if demonstrative is not None:
                         # Get the current step's text
                         current_step_text = self.recipe['steps'][self.current_step]['text']
 
